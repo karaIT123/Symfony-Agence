@@ -5,8 +5,11 @@ namespace App\Entity;
 use App\Repository\PropertyRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Cocur\Slugify\Slugify;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
+ * @UniqueEntity("title")
  * @ORM\Entity(repositoryClass=PropertyRepository::class)
  */
 class Property
@@ -24,6 +27,7 @@ class Property
     private $id;
 
     /**
+     * @Assert\Length(min=5,max=100 )
      * @ORM\Column(type="string", length=255)
      */
     private $title;
@@ -35,6 +39,7 @@ class Property
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\Range(min=10,max=500)
      */
     private $surface;
 
@@ -69,6 +74,7 @@ class Property
     private $city;
 
     /**
+     * @Assert\Regex("/[0-9]{5}$/")
      * @ORM\Column(type="string", length=255)
      */
     private $postal_code;
@@ -82,6 +88,11 @@ class Property
      * @ORM\Column(type="datetime_immutable")
      */
     private $created_at;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $address;
 
     public function __construct()
     {
@@ -248,6 +259,18 @@ class Property
     public function setCreatedAt(\DateTimeImmutable $created_at): self
     {
         $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    public function setAddress(string $address): self
+    {
+        $this->address = $address;
 
         return $this;
     }
