@@ -1,0 +1,36 @@
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">
+            <a href="{{ path('property.show',{id: property.id, slug: property.slug}) }}">
+                {{ property.title }}
+            </a>
+        </h5>
+        <div class="card-text text-muted">{{ property.description | nl2br }}</div>
+        <div class="card-text mt-2" style="font-weight: bold;" style="font-size: 0.7rem;">
+            {{ property.city }}
+            ({{ property.postalCode }})
+            <span class="text-primary" style="font-size: 1.2rem;">
+                - ({{ property.surface }} m²)
+            </span>
+        </div>
+        <div class="text-primary mt-2" style="font-size: 2.2rem;">
+            {{ property.formattedPrice }} $
+        </div>
+    </div>
+</div>
+
+{#
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">
+            <a href="{{ path('property.show',{id: property.id, slug: property.slug}) }}">
+                {{ property.title }}
+            </a>
+        </h5>
+        <div class="card-text text-muted">{{ property.description | nl2br }}</div>
+        <div class="card-text" style="font-weight: bold;">{{ property.city }}({{ property.postalCode }})</div>
+        <div class="text-primary" style="font-size: 2.2rem;">
+            {{ property.formattedPrice }}
+        </div>
+    </div>
+</div>#}

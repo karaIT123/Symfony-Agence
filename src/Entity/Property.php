@@ -15,8 +15,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Property
 {
     CONST HEAT = [
-        1 => "Electrique",
-        2 => "Gaz"
+        0 => "Electrique",
+        1 => "Gaz"
     ];
 
     /**

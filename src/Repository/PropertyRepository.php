@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Property;
+use App\Entity\PropertySearch;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -20,15 +22,39 @@ class PropertyRepository extends ServiceEntityRepository
         parent::__construct($registry, Property::class);
     }
 
+//    /**
+//     * @return Property[]
+//     */
+//    public function getAllSoldFalse(): array
+//    {
+//        return $this->createQueryBuilder('p')
+//            ->Where('p.sold = false')
+//            ->getQuery()
+//            ->getResult();
+//    }
+
     /**
-     * @return Property[]
+     * @return Query
      */
-    public function getAllSoldFalse(): array
+    public function getAllSoldFalse(PropertySearch $search): Query
     {
-        return $this->createQueryBuilder('p')
-            ->Where('p.sold = false')
-            ->getQuery()
-            ->getResult();
+        $query = $this->findAllVisible();
+
+        if($search->getMaxPrice())
+        {
+            $query =$query
+                ->where('p.price <= :maxPrice')
+                ->setParameter('maxPrice', $search->getMaxPrice());
+        }
+
+        if($search->getMinSurface())
+        {
+            $query =$query
+                ->where('p.price <= :minSurface')
+                ->setParameter('minSurface', $search->getMinSurface());
+        }
+
+        return $query->getQuery();
     }
 
 

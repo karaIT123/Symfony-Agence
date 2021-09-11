@@ -5,9 +5,13 @@ namespace App\Controller;
 
 
 use App\Entity\Property;
+use App\Entity\PropertySearch;
+use App\Form\PropertySearchType;
 use App\Repository\PropertyRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -30,10 +34,10 @@ class PropertyController extends AbstractController
     }
 
     /**
-     * @Route("/Biens",name="property.index")
+     * @Route("/Property",name="property.index")
      * @return Response
      */
-    public function index(): Response
+    public function index(PaginatorInterface $paginator, Request $request): Response
     {
 //        $property = new Property();
 //        $property->setTitle("LaFrance")
@@ -58,17 +62,31 @@ class PropertyController extends AbstractController
 //        $property[0]->setSold(true);
 //        $this->em->flush();
 //        dump($property);
-        $property = $this->repository->find(1);
-        dump($property->getSlug());
+        #$property = $this->repository->find(1);
+        #dump($property->getSlug());
+        #$properties = $this->repository->getAllSoldFalse();
+
+        $search = new PropertySearch();
+        $form = $this->createForm(PropertySearchType::class,$search);
+        $form->handleRequest($request);
+
+
+        $properties = $paginator->paginate($this->repository->getAllSoldFalse($search),
+            $request->query->getInt('page', 1),
+            12);
         return $this->render("property/index.html.twig",
-            ['slug' => $property->getSlug(),
-            'current_page' => 'property']);
+            ['current_page' => 'property',
+                'properties' => $properties,
+                'form' => $form->createView()
+
+            ]);
     }
 
     /**
      * @param Property $property
+     * @param string $slug
      * @return Response
-     * @Route("/Biens/{slug}-{id}", name="property.show", requirements={"slug":"[a-zA-Z0-9\-]*"})
+     * @Route("/Property/{slug}-{id}", name="property.show", requirements={"slug":"[a-zA-Z0-9\-]*"})
      */
     public function show(Property $property, string $slug): Response
     {
