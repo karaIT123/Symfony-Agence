@@ -6,7 +6,9 @@
     <div class="jumbotron">
         <div class="container">
             <div class="row">
-                <div class="col-md-8"></div>
+                <div class="col-md-8">
+                    <img src="{{ vich_uploader_asset(property, 'imageFile') }}" alt="" class="card-img-top" style="width: 100%; height:auto">
+                </div>
                 <div class="col-md-4">
                     <h1>{{ property.title }}</h1>
                     <h2>{{ property.rooms }} pièces - {{ property.surface }} m²</h2>
@@ -16,10 +18,7 @@
             </div>
         </div>
     </div>
-    <div class="container mt-4">
-
-
-
+    <div class="container mt-4 mb-4">
         <p>
             {{ property.description | nl2br }}
         </p>
@@ -52,6 +51,11 @@
             </div>
             <div class="col-md-4">
                 <h2>Spécificités</h2>
+                <ul class="list-group">
+                    {% for option in property.options %}
+                        <li class="list-group-item">{{ option.name }}</li>
+                    {% endfor %}
+                </ul>
 
             </div>
         </div>

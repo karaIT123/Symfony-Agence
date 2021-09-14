@@ -8,11 +8,15 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Cocur\Slugify\Slugify;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @UniqueEntity("title")
  * @ORM\Entity(repositoryClass=PropertyRepository::class)
+ * @Vich\Uploadable()
  */
 class Property
 {
@@ -20,6 +24,19 @@ class Property
         0 => "Electrique",
         1 => "Gaz"
     ];
+
+    /**
+     * @var string|null
+     * @ORM\Column(type="string", length=255)
+     */
+    private string $fileName;
+
+    /**
+     * @var File|null
+     * @Vich\UploadableField(mapping="property_image",fileNameProperty="filename")
+     */
+    private $imageFile;
+
 
     /**
      * @ORM\Id
@@ -100,6 +117,12 @@ class Property
      * @ORM\ManyToMany(targetEntity=Option::class, inversedBy="Properties")
      */
     private $options;
+
+    /**
+     * @ORM\Column(type="datetime_immutable")
+     */
+    private $updated_at;
+
 
     public function __construct()
     {
@@ -284,7 +307,7 @@ class Property
     }
 
     /**
-     * @return Collection|Option[]
+     * @return Collection
      */
     public function getOptions(): Collection
     {
@@ -306,6 +329,59 @@ class Property
         if ($this->options->removeElement($option)) {
             $option->removeProperty($this);
         }
+
+        return $this;
+    }
+
+    /**
+     * @return File|null
+     */
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    /**
+     * @param File|null $imageFile
+     * @return Property
+     */
+    public function setImageFile(?File $imageFile): Property
+    {
+
+//        if ($this->getImageFile() !==  null) {
+//            die("opk");
+//            #var_dump($this->imageFile);
+//            $this->updated_at = new \DateTimeImmutable('now');
+//        }
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getFileName(): ?string
+    {
+        return $this->fileName;
+    }
+
+    /**
+     * @param string|null $fileName
+     * @return Property
+     */
+    public function setFileName(?string $fileName): Property
+    {
+        $this->fileName = $fileName;
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updated_at;
+    }
+
+    public function setUpdatedAt(\DateTimeImmutable $updated_at): self
+    {
+        $this->updated_at = $updated_at;
 
         return $this;
     }

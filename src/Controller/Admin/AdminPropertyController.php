@@ -5,6 +5,8 @@ namespace App\Controller\Admin;
 use App\Entity\Property;
 use App\Form\PropertyType;
 use App\Repository\PropertyRepository;
+use App\Service\FileUploader;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -44,7 +46,7 @@ class AdminPropertyController extends AbstractController {
     /**
      * @Route("/admin/property/create", name="admin.property.new")
      */
-    public function new(Request $request)
+    public function new(Request $request, FileUploader $uploader)
     {
         $property = new Property();
         $form =  $this->createForm(PropertyType::class, $property);
@@ -52,6 +54,13 @@ class AdminPropertyController extends AbstractController {
 
         if($form->isSubmitted() && $form->isValid())
         {
+            $file = $form['fileName']->getData();
+            if($file)
+            {
+                $file = $uploader->upload($file);
+                $property->setFileName($file);
+            }
+
             $this->em->persist($property);
             $this->em->flush();
             $this->addFlash('success','Creation effectuer avec success');
@@ -71,7 +80,7 @@ class AdminPropertyController extends AbstractController {
      * @param Request $request
      * @return Response
      */
-    public function edit(Property $property, Request $request): Response
+    public function edit(Property $property, FileUploader $uploader, Request $request): Response
     {
         $form =  $this->createForm(PropertyType::class, $property);
 
@@ -79,6 +88,14 @@ class AdminPropertyController extends AbstractController {
 
         if($form->isSubmitted() && $form->isValid())
         {
+            $file = $form['imageFile']->getData();
+            if($file)
+            {
+                $file = $uploader->upload($file);
+                $property->setUpdatedAt(new \DateTimeImmutable('NOW'));
+                $property->setFileName($file);
+            }
+
             $this->em->flush();
             $this->addFlash('success','Edition effectuer avec success');
             return $this->redirectToRoute('admin.property.index');

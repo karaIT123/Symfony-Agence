@@ -7,8 +7,13 @@ use App\Entity\Property;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Vich\UploaderBundle\Form\Type\VichImageType;
+use Vich\UploaderBundle\Mapping\Annotation\UploadableField;
 
 class PropertyType extends AbstractType
 {
@@ -35,6 +40,12 @@ class PropertyType extends AbstractType
                 'class' => Option::class,
                 'choice_label' => 'name',
                 'multiple' => true,
+                'required' => false
+            ])
+            ->add('imageFile', FileType::class, [
+                'required' => false,
+                'data_class'=> null
+
             ])
         ;
     }
