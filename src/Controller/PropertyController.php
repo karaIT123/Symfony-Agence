@@ -4,10 +4,13 @@
 namespace App\Controller;
 
 
+use App\Entity\Contact;
 use App\Entity\Property;
 use App\Entity\PropertySearch;
+use App\Form\ContactType;
 use App\Form\PropertySearchType;
 use App\Repository\PropertyRepository;
+use App\Service\ContactService;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -88,10 +91,11 @@ class PropertyController extends AbstractController
      * @return Response
      * @Route("/Property/{slug}-{id}", name="property.show", requirements={"slug":"[a-zA-Z0-9\-]*"})
      */
-    public function show(Property $property, string $slug): Response
+    public function show(Property $property, string $slug, Request $request, ContactService $contactService): Response
     {
-
         #$property = $this->repository->find($id);
+
+
 
         if($property->getSlug() !== $slug) {
             return $this->redirectToRoute("property.show", [
@@ -100,9 +104,25 @@ class PropertyController extends AbstractController
             ],301);
         }
 
+        $contact = new Contact();
+        $contact->setProperty($property);
+        $form = $this->createForm(ContactType::class, $contact);
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid())
+        {
+            $contactService->notify($contact);
+            $this->addFlash("success", "Message envoyer avec success");
+            return $this->redirectToRoute("property.show", [
+                'id' => $property->getId(),
+                'slug' => $property->getSlug()
+            ]);
+        }
+
         return $this->render("property/show.html.twig",[
             'current_page' => 'property',
-            'property' => $property
+            'property' => $property,
+            'form' => $form->createView()
         ]);
     }
 
